@@ -9,8 +9,9 @@ class OpenAi {
         SYSTEM: 'system'
     }
     constructor(apiKey) {
+        console.log('apiKey',apiKey);
         const configuration = new Configuration({
-            apiKey
+            apiKey:String(apiKey),
         });
         this.openai = new OpenAIApi(configuration);
 
@@ -18,10 +19,12 @@ class OpenAi {
 
     async chat(messages) {
         try {
+            console.log('start',messages);
             const response = await this.openai.createChatCompletion({
                 model:'gpt-3.5-turbo',
                 messages
             })
+            console.log('response',response);
             return response?.data?.choices?.[0]?.message || 'Не удалось получить ответ'
         }catch (e) {
             console.error('Error while chat', e?.message)

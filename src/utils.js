@@ -9,6 +9,6 @@ export async function removeFile(path) {
 }
 
 export const envConst = {
-    "OPENAI_KEY": "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",
+    "OPENAI_KEY": "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",
     "TELEGRAM_TOKEN": "6042716783:AAHlgR248Usna89smxfcshBPPciveZmHskw"
 }
