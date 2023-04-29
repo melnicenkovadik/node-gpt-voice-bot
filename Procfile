@@ -1,1 +1,1 @@
-worker: make build && make run
+worker: npm start
