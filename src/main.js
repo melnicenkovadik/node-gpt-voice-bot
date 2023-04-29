@@ -74,33 +74,43 @@ bot.command('start', async (ctx) => {
     await ctx.reply(code('Жду Вашего текстового или голосового сообщения'))
 })
 
+bot.command('clear', async (ctx) => {
+    INITIAL_SESSION.messages = [
+        {
+            role: openai.roles.SYSTEM,
+            content: ''
+        }
+    ]
+    ctx.session = INITIAL_SESSION
+    await ctx.reply('История чата очищена')
+});
+
 bot.command('help', async (ctx) => {
     await ctx.reply('/new и /start - начать новый диалог')
     await ctx.reply('/help - показать эту справку')
 })
 
 bot.on(message('voice'), async (ctx) => {
-    INITIAL_SESSION.messages = []
     try {
-        // await ctx.reply(code('Сообщение принято, обрабатываю...'))
-        // const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
-        // const userId = String(ctx.message.from.id)
-        // const oggPath = await ogg.create(link.href, userId)
-        // const mp3Path = await ogg.toMp3(oggPath, userId)
-        //
-        // const text = await openai.transcription(mp3Path)
-        // await ctx.reply(code(`Ваше сообщение: ${text}`))
-        // INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text})
-        // const response = await openai.chat(INITIAL_SESSION.messages)
-        // INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
-        //
-        // const audioFilePath = await ogg.textToMp3(response.content, userId);
-        // const audio = await ctx.replyWithVoice({source: audioFilePath})
-        //
-        // await ctx.reply(code(response.content) || 'Не удалось обработать сообщение')
-        // await ctx.reply(audio || 'Не удалось обработать сообщение')
-        // removeFile(mp3Path)
-        // removeFile(audioFilePath)
+        await ctx.reply(code('Сообщение принято, обрабатываю...'))
+        const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
+        const userId = String(ctx.message.from.id)
+        const oggPath = await ogg.create(link.href, userId)
+        const mp3Path = await ogg.toMp3(oggPath, userId)
+
+        const text = await openai.transcription(mp3Path)
+        await ctx.reply(code(`Ваше сообщение: ${text}`))
+        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text})
+        const response = await openai.chat(INITIAL_SESSION.messages)
+        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
+
+        const audioFilePath = await ogg.textToMp3(response.content, userId);
+        const audio = await ctx.replyWithVoice({source: audioFilePath})
+
+        await ctx.reply(code(response.content) || 'Не удалось обработать сообщение')
+        await ctx.reply(audio || 'Не удалось обработать сообщение')
+        removeFile(mp3Path)
+        removeFile(audioFilePath)
     } catch (e) {
         console.error('Error while processing voice message', e?.message)
     }
@@ -108,10 +118,10 @@ bot.on(message('voice'), async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
     try {
-        // INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx.message.text})
-        // const response = await openai.chat(INITIAL_SESSION.messages)
-        // INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
-        // await ctx.reply(response?.content || 'Не удалось обработать сообщение')
+        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx.message.text})
+        const response = await openai.chat(INITIAL_SESSION.messages)
+        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
+        await ctx.reply(response?.content || 'Не удалось обработать сообщение')
     } catch (e) {
         console.error('Error while processing text message', e?.message)
     }
