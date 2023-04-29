@@ -87,10 +87,12 @@ bot.command('clear', async (ctx) => {
 
 bot.command('help', async (ctx) => {
     await ctx.reply('/new и /start - начать новый диалог')
+    await ctx.reply('/clear - очистить историю чата')
     await ctx.reply('/help - показать эту справку')
 })
 
 bot.on(message('voice'), async (ctx) => {
+    ctx.session ??= INITIAL_SESSION
     try {
         await ctx.reply(code('Сообщение принято, обрабатываю...'))
         const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
@@ -107,8 +109,8 @@ bot.on(message('voice'), async (ctx) => {
         const audioFilePath = await ogg.textToMp3(response?.content || 'Failed', userId);
         const audio = await ctx.replyWithVoice({source: audioFilePath})
 
-        await ctx.reply(code(response?.content) || 'Не удалось обработать сообщение')
-        await ctx.reply(audio || 'Не удалось обработать сообщение')
+        await ctx.reply(code(response?.content) || 'Не удалось обработать аудио сообщение')
+        await ctx.reply(audio || 'Не удалось обработать аудио')
         removeFile(mp3Path)
         removeFile(audioFilePath)
     } catch (e) {
@@ -117,6 +119,7 @@ bot.on(message('voice'), async (ctx) => {
 })
 
 bot.on(message('text'), async (ctx) => {
+    ctx.session ??= INITIAL_SESSION
     try {
         INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx?.message?.text || 'Не удалось обработать сообщение'})
         const response = await openai.chat(INITIAL_SESSION.messages)
