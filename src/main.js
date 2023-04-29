@@ -4,9 +4,10 @@ import {message} from "telegraf/filters";
 import {ogg} from "./ogg.js";
 import {openai} from "./openai.js";
 import {code} from "telegraf/format";
-import {removeFile} from "./utils.js";
+import {env, removeFile} from "./utils.js";
 
-const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
+// const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
+const bot = new Telegraf(env?.TELEGRAM_TOKEN)
 
 let INITIAL_SESSION = {
     messages: [
@@ -117,5 +118,8 @@ bot.on(message('text'), async (ctx) => {
         console.error('Error while processing text message', e?.message)
     }
 })
+
+bot.launch()
+
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
