@@ -1,5 +1,5 @@
 import {Configuration, OpenAIApi} from 'openai';
-import config from "config";
+// import config from "config";
 import {createReadStream} from "fs";
 import {env} from "./utils.js";
 

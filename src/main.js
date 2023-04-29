@@ -1,5 +1,5 @@
 import {Telegraf} from "telegraf";
-import config from "config";
+// import config from "config";
 import {message} from "telegraf/filters";
 import {ogg} from "./ogg.js";
 import {openai} from "./openai.js";
