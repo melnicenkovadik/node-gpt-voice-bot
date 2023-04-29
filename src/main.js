@@ -80,6 +80,7 @@ bot.command('help', async (ctx) => {
 })
 
 bot.on(message('voice'), async (ctx) => {
+    INITIAL_SESSION.messages = []
     try {
         // await ctx.reply(code('Сообщение принято, обрабатываю...'))
         // const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
