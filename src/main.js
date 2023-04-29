@@ -99,15 +99,15 @@ bot.on(message('voice'), async (ctx) => {
         const mp3Path = await ogg.toMp3(oggPath, userId)
 
         const text = await openai.transcription(mp3Path)
-        await ctx.reply(code(`Ваше сообщение: ${text}`))
-        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text})
+        await ctx.reply(code(`Ваше сообщение: ${text || 'Не удалось обработать сообщение'}`))
+        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text || 'Не удалось обработать сообщение'})
         const response = await openai.chat(INITIAL_SESSION.messages)
         INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
 
-        const audioFilePath = await ogg.textToMp3(response.content, userId);
+        const audioFilePath = await ogg.textToMp3(response?.content || 'Failed', userId);
         const audio = await ctx.replyWithVoice({source: audioFilePath})
 
-        await ctx.reply(code(response.content) || 'Не удалось обработать сообщение')
+        await ctx.reply(code(response?.content) || 'Не удалось обработать сообщение')
         await ctx.reply(audio || 'Не удалось обработать сообщение')
         removeFile(mp3Path)
         removeFile(audioFilePath)
@@ -118,9 +118,9 @@ bot.on(message('voice'), async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
     try {
-        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx.message.text})
+        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx?.message?.text || 'Не удалось обработать сообщение'})
         const response = await openai.chat(INITIAL_SESSION.messages)
-        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
+        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response?.content || 'Не удалось обработать сообщение'})
         await ctx.reply(response?.content || 'Не удалось обработать сообщение')
     } catch (e) {
         console.error('Error while processing text message', e?.message)

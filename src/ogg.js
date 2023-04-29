@@ -17,7 +17,7 @@ class OggConverter {
 
     toMp3(input, output) {
         try {
-            const outputPath = resolve(dirname(input), `${output}.mp3`)
+            const outputPath = resolve(dirname(input), `${output || '2121'}.mp3`)
             return new Promise((resolve, reject) => {
                 ffmpeg(input)
                     .inputOption('-t 30')

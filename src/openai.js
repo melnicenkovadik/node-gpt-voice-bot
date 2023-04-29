@@ -23,7 +23,7 @@ class OpenAi {
                 model:'gpt-3.5-turbo',
                 messages
             })
-            return response.data.choices[0].message
+            return response?.data?.choices?.[0]?.message || 'Не удалось получить ответ'
         }catch (e) {
             console.error('Error while chat', e?.message)
             return e.message
@@ -33,7 +33,7 @@ class OpenAi {
     async transcription(filepath) {
         try {
             const response = await this.openai.createTranscription(createReadStream(filepath), 'whisper-1')
-            return response.data.text
+            return response.data.text || 'Не удалось распознать сообщение'
         } catch (e) {
             console.error('Error while transcription', e?.message)
             return e.message
