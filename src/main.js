@@ -104,12 +104,12 @@ bot.on(message('voice'), async (ctx) => {
         await ctx.reply(code(`Ваше сообщение: ${text || 'Не удалось обработать сообщение'}`))
         INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text || 'Не удалось обработать сообщение'})
         const response = await openai.chat(INITIAL_SESSION.messages)
-        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content})
+        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content || 'Не удалось обработать сообщение'})
 
         const audioFilePath = await ogg.textToMp3(response?.content || 'Failed', userId);
         const audio = await ctx.replyWithVoice({source: audioFilePath})
 
-        await ctx.reply(code(response?.content) || 'Не удалось обработать аудио сообщение')
+        await ctx.reply(code(response?.content || 'Не удалось обработать аудио сообщение'))
         await ctx.reply(audio || 'Не удалось обработать аудио')
         removeFile(mp3Path)
         removeFile(audioFilePath)
