@@ -1,22 +1,19 @@
 import {Telegraf} from "telegraf";
-// import config from "config";
 import {message} from "telegraf/filters";
-import {ogg} from "./ogg.js";
 import {openai} from "./openai.js";
 import {code} from "telegraf/format";
-import {env, removeFile} from "./utils.js";
+import {envConst} from "./utils.js";
 
-// const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
-const bot = new Telegraf(env?.TELEGRAM_TOKEN)
-
-let INITIAL_SESSION = {
-    messages: [
-        {
-            role: openai.roles.SYSTEM,
-            content: ''
-        }
-    ],
-};
+const bot = new Telegraf(envConst?.TELEGRAM_TOKEN)
+//
+// let INITIAL_SESSION = {
+//     messages: [
+//         {
+//             role: openai.roles.SYSTEM,
+//             content: ''
+//         }
+//     ],
+// };
 
 bot.command('new', async (ctx) => {
     INITIAL_SESSION.messages = [
@@ -92,39 +89,39 @@ bot.command('help', async (ctx) => {
 })
 
 bot.on(message('voice'), async (ctx) => {
-    ctx.session ??= INITIAL_SESSION
     try {
-        await ctx.reply(code('Сообщение принято, обрабатываю...'))
-        const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
-        const userId = String(ctx.message.from.id)
-        const oggPath = await ogg.create(link.href, userId)
-        const mp3Path = await ogg.toMp3(oggPath, userId)
-
-        const text = await openai.transcription(mp3Path)
-        await ctx.reply(code(`Ваше сообщение: ${text || 'Не удалось обработать сообщение'}`))
-        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text || 'Не удалось обработать сообщение'})
-        const response = await openai.chat(INITIAL_SESSION.messages)
-        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content || 'Не удалось обработать сообщение'})
-
-        const audioFilePath = await ogg.textToMp3(response?.content || 'Failed', userId);
-        const audio = await ctx.replyWithVoice({source: audioFilePath})
-
-        await ctx.reply(code(response?.content || 'Не удалось обработать аудио сообщение'))
-        await ctx.reply(audio || 'Не удалось обработать аудио')
-        removeFile(mp3Path)
-        removeFile(audioFilePath)
+        // await ctx.reply(code('Сообщение принято, обрабатываю...'))
+        // const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
+        // const userId = String(ctx.message.from.id)
+        // const oggPath = await ogg.create(link.href, userId)
+        // const mp3Path = await ogg.toMp3(oggPath, userId)
+        //
+        // const text = await openai.transcription(mp3Path) || 'текста нет'
+        // await ctx.reply(code(`Ваше сообщение: ${text || 'Не удалось обработать сообщение'}`))
+        // INITIAL_SESSION.messages.push({role: openai.roles.USER, content: text || 'Не удалось обработать сообщение'})
+        // const response = await openai.chat(INITIAL_SESSION.messages)
+        // INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response.content || 'Не удалось обработать сообщение'})
+        //
+        // const audioFilePath = await ogg.textToMp3(response?.content || 'Failed', userId);
+        // const audio = await ctx.replyWithVoice({source: audioFilePath})
+        //
+        // await ctx.reply(code(response?.content || 'Не удалось обработать аудио сообщение'))
+        // await ctx.reply(audio || 'Не удалось обработать аудио')
+        // removeFile(mp3Path)
+        // removeFile(audioFilePath)
+        ctx.reply('Голосовые сообщения пока не поддерживаются')
     } catch (e) {
         console.error('Error while processing voice message', e?.message)
     }
 })
 
 bot.on(message('text'), async (ctx) => {
-    ctx.session ??= INITIAL_SESSION
     try {
-        INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx?.message?.text || 'Не удалось обработать сообщение'})
-        const response = await openai.chat(INITIAL_SESSION.messages)
-        INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response?.content || 'Не удалось обработать сообщение'})
-        await ctx.reply(response?.content || 'Не удалось обработать сообщение')
+        // INITIAL_SESSION.messages.push({role: openai.roles.USER, content: ctx?.message?.text || 'Не удалось обработать сообщение'})
+        // const response = await openai.chat(INITIAL_SESSION.messages)
+        // INITIAL_SESSION.messages.push({role: openai.roles.ASSISTANT, content: response?.content || 'Не удалось обработать сообщение'})
+        // await ctx.reply(response?.content || 'Не удалось обработать сообщение')
+        ctx.reply('Текстовые сообщения пока не поддерживаются')
     } catch (e) {
         console.error('Error while processing text message', e?.message)
     }

@@ -1,7 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai';
-// import config from "config";
 import {createReadStream} from "fs";
-import {env} from "./utils.js";
+import {envConst} from "./utils.js";
 
 class OpenAi {
     roles = {
@@ -41,5 +40,4 @@ class OpenAi {
     }
 }
 
-// export const openai = new OpenAi(config.get('OPENAI_KEY'));
-export const openai = new OpenAi(env.OPENAI_KEY);
+export const openai = new OpenAi(envConst.OPENAI_KEY);
